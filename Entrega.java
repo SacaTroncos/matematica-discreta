@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 8.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
- * - Nom 1:
+ * - Nom 1: Sergi Oliver Juárez
  * - Nom 2:
  * - Nom 3:
  *
@@ -39,7 +39,7 @@ import java.util.Set;
  * fàcilment les actualitzacions amb enunciats nous. Si no podeu visualitzar bé algun enunciat,
  * assegurau-vos de que el vostre editor de texte estigui configurat amb codificació UTF-8.
  */
-class Entrega {
+public class PracticaDiscreta {
   /*
    * Aquí teniu els exercicis del Tema 1 (Lògica).
    *
@@ -56,30 +56,154 @@ class Entrega {
   static class Tema1 {
     /*
      * És cert que ∀x ∃!y. P(x) -> Q(x,y) ?
+     * Es cierto que para todo x, existe un unico y, que si P(x) entonces Q(x,y)
      */
     static boolean exercici1(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TO DO
+        //∀x (Recorremos el universo x)
+        for (int x : universe) {
+        //Si se cumple P(x)  
+            if (p.test(x)) {
+                //∃!y (solo existe uno, asi que cuando lo encontremos lo ponemos a true
+                //y si se encuentra otro y esta en true significa que no se cumple)
+                boolean found = false;
+                //Recorremos el universo y
+                for (int y : universe) {
+                    //Si se cumple la condicion Q(x,y)
+                    if (q.test(x, y)) {
+                        if (found) {
+                            // Ya se ha encontrado otro valor de y que cumple con la condición Q(x,y)
+                            //por lo tanto return false
+                            return false;
+                        } else {
+                            //Se pone a true para comprobar que sea el unico y que lo cumple
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    // No se ha encontrado ningún valor de y que cumpla con la condición Q(x,y)
+                    return false;
+                }
+            }
+        }
+        //Si llega hasta aqui es que todas las condiciones se han cumplido
+        //por lo que ∀x ∃!y. P(x) -> Q(x,y) se cumple
+        return true;
     }
 
     /*
      * És cert que ∃!x ∀y. P(y) -> Q(x,y) ?
+     * Es cierto que existe un solo x tal que, para todo y, si P(y) entonces Q(x,y)
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TO DO
+        //∃!x (solo existe uno, asi que cuando lo encontremos lo ponemos a true
+        //y si se encuentra otro y esta en true significa que no se cumple)
+        boolean  found = false;
+        //Variable auxiliar para guardar el valor de la x que se cumple
+        int auxX = 0;
+        
+        //Recorremos el universo de las x para encontrar ese unico valor
+        //de x que hace que se cumpla
+        for(int x : universe){
+            if(p.test(x)){
+                //Si esta en false, es que es la primera x en cumplir la condicion
+                if(!found){
+                    //Se pone a true para comprobar que sea el unico
+                    found = true;
+                    //Guardamos el valor de x
+                    auxX = x;
+                }else{
+                    //Si se cumple pero se habia encontrado otro anteriormente
+                    //significa que existe mas de un x por lo tanto no se cumple
+                    return false;
+                }
+            }   
+        }
+        if (!found) {
+            //Si no se ha encontrado ninguno tampoco se cumple
+            return false;
+        }
+
+        //Recorremos todos valores del universo y y para cada uno se comprueba
+        // que se cumpla las condiciones
+        for(int y: universe){
+            //Si se cumple en P y Q 
+            // (∃!x ∀y. P(y) -> Q(x,y)) se cumple la condicion
+            if(p.test(y) && q.test(auxX, y)){
+                return true;
+            }else if(!p.test(y) && !q.test(auxX, y))//Si no se cumple en P, Q no tendria que poder cumplirse                                    
+            {                                             //porque (P(y) -> Q(x,y)) -> !(P(y))) v (Q(x,y))
+                return true;
+            }
+        }
+        
+        //Si llega hasta aqui es que todas las condiciones no se han cumplido
+        //por lo que ∃!x ∀y. P(y) -> Q(x,y) es falso
+        return false;
     }
 
     /*
      * És cert que ∃x,y ∀z. P(x,z) ⊕ Q(y,z) ?
+     * Es cierto que para algún x e y y para todo z, la proposición P(x,z) ⊕ Q(y,z) es verdadera.
      */
     static boolean exercici3(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TO DO
+        // Recorremos el universo de las x
+        for (int x : universe) {
+            // Para cada x recorremos todo el universo de y
+            for (int y : universe) {
+                boolean seCumpleP = true;
+                boolean seCumpleQ = true;
+                // Para cada x e y se recorre todo el universo z
+                for (int z : universe) {
+                    // Verificar P(x,z) ⊕ Q(y,z)
+                    if (p.test(x, z) == q.test(y, z)) {
+                        seCumpleP = false;
+                        seCumpleQ = false;
+                        break; // Si no se cumple la proposición para algún z, salir del bucle
+                    }
+                }
+                // Si la proposición se cumple para todos los valores de z 
+                if (seCumpleP || seCumpleQ) {
+                    return true;
+                }
+            }
+        }
+        // Si no se encuentra ninguna combinación de x e y que cumpla 
+        //∃x,y ∀z. P(x,z) ⊕ Q(y,z) entonces es falso
+        return false; 
     }
 
     /*
      * És cert que (∀x. P(x)) -> (∀x. Q(x)) ?
+     * Para todo x, si P(x) es verdadero, entonces Q(x) también es verdadero
      */
     static boolean exercici4(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
-      return false; // TO DO
+        boolean seCumpleP = true;
+        boolean seCumpleQ = true;
+        
+        //Recorremos el univero de las x
+        for(int x : universe){
+            //Se comprueba si para algun x P(x) no se cumple
+            if(!p.test(x)){
+                seCumpleP = false;
+            }
+            //Se comprueba si para algun x P(x) no se cumple
+            if(!q.test(x)){
+                seCumpleQ = false;
+            }
+        }
+        
+        //Si se cumple en P y Q 
+        // (∀x. P(x)) -> (∀x. Q(x)) se cumple la condicion
+        if(seCumpleP && seCumpleQ){
+            return true;
+        }else if(!seCumpleP && !seCumpleQ)//Si no se cumple en P, Q no tendria que poder cumplirse                                    
+        {                                 //porque ((∀x. P(x)) -> (∀x. Q(x)) -> !(∀x. P(x)) v (∀x. Q(x))
+            return true;
+        }
+        //Si no se cumple las condiciones anteriores entonces
+        //(∀x. P(x)) -> (∀x. Q(x)) no se cumple
+        return false;
     }
 
     /*
