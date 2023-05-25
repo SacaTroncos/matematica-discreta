@@ -1,3 +1,5 @@
+package practicadiscreta;
+
 import java.lang.AssertionError;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -311,8 +313,76 @@ public class PracticaDiscreta {
      * Podeu soposar que `a` està ordenat de menor a major.
      */
     static boolean exercici1(int[] a, int[][] rel) {
-      return false; // TO DO
+       //Para que sea una relacion de equivalencia tiene que cumplir que sea
+        // Reflexiva, simetrica y transitiva
+        
+        //Comprobamos si es reflexiva(aRa) para cada elemnto de tiene que cumplirse que
+        // la relacion aRa se cumpla, es decir que haya un  subconjunto (a,a) para cada a
+        
+        //Recorremos el conjunto a
+        for (int x : a) {
+            //miramos que para cada uno de los elementos haya un subconjunto que 
+            //haga que se cumpla la relacion
+            boolean esReflexiva = false;
+            //Recorre cada subconjunto
+            for (int[] subConjunto : rel) {
+              //Si se cumple la relacion aRa
+              if (subConjunto[0] == x && subConjunto[1] == x) {
+                esReflexiva = true;//cumple con la propiedad de reflexividad y pasa a comprobar al siguiente
+                break;
+              }
+            }
+            if (!esReflexiva) {
+              return false; // No cumple con la propiedad de reflexividad
+            }
+        }
+        
+        //Comprobamos si es Simetrica, es decir si hay un subconjunto aRb tiene 
+        // que haber otor subconjunto bRa
+        
+        //Recorremos cada subconjunto
+        for (int[] subConjunto : rel) {
+          boolean esSimetrico = false;
+          //Para cada subconjunto recorremos todos los subconjuntos para comprobar si esta su simetrico
+          for (int[] subConjuntoSimetrico : rel) {
+            //Si se cumple la relacion
+            if (subConjunto[0] == subConjuntoSimetrico[1] && subConjunto[1] == subConjuntoSimetrico[0]) {
+              esSimetrico = true;//cumple con la propiedad simetrica y pasa a comprobar al siguiente subconjunto
+              break;
+            }
+          }
+          if (!esSimetrico) {
+            return false; // No cumple con la propiedad de simetría
+          }
+        }
+        
+        //Comprobamos si se cumple la transitividad, aRb y bRc --> aRc
+        
+        //recorremos cada subconjunto
+        for (int[] subConjunto1 : rel) {
+          //Para cada subconjunto recorremos los subconjuntos otra vez
+          for (int[] subConjunto2 : rel) {
+            //Comprobamos que aRb y bRc
+            if (subConjunto1[1] == subConjunto2[0]) {
+              boolean esTransitivo = false;
+              //Recorremos por tercera vez los subconjuntos
+              for (int[] subConjunto3 : rel) {
+                //Y vemos is se cumple aRc
+                if (subConjunto1[0] == subConjunto3[0] && subConjunto2[1] == subConjunto3[1]) {
+                  esTransitivo = true;//cumple con la propiedad transitiva y pasa a comprobar al siguiente subconjunto
+                  break;
+                }
+              }
+              if (!esTransitivo) {
+                return false; // No cumple con la propiedad de transitividad
+              }
+            }
+          }
+        }
+        
+        return true; // Si llega hasta aqui cumple con todas las propiedades, es una relación de equivalencia
     }
+    
 
     /*
      * Comprovau si la relació `rel` definida sobre `a` és d'equivalència. Si ho és, retornau el
@@ -321,17 +391,88 @@ public class PracticaDiscreta {
      * Podeu soposar que `a` està ordenat de menor a major.
      */
     static int exercici2(int[] a, int[][] rel) {
-      return 0; // TO DO
-    }
+        //Si es equivalente
+       if (exercici1(a, rel)) {
+        // Calcular cardinal del conjunto cociente
+        int cardinal = 0;
+        boolean[] comprobado = new boolean[a.length]; // Marcar los elementos ya visitados
+        
+        //Hace un bucle con tantas iteraciones como longitud del conjunto a
+        for (int i = 0; i < a.length; i++) {
+          //Si no hemos comprobado esa posicion
+          if (!comprobado[i]) {
+            comprobado[i] = true; // Marcar el elemento como visitado
+            cardinal++;
 
+            // Encontrar todos los elementos relacionados y marcarlos como visitados
+            for (int j = i + 1; j < a.length; j++) {
+              if (!comprobado[j] && hayRelacion(a[i], a[j], rel)) {
+                comprobado[j] = true; // Marcar el elemento como visitado
+              }
+            }
+          }
+        }
+        return cardinal;
+      } else {
+        return -1;
+      }
+    }
+    
+    private static boolean hayRelacion(int x, int y, int[][] rel) {
+        //recorremos los subconjuntos
+        for (int[] subConjunto : rel) {
+          // Si encuentra un subconjunto donde x está relacionado con y o y está relacionado con x
+          if (subConjunto[0] == x && subConjunto[1] == y) {
+            return true;//indicando que x e y pertenecen a la misma clase de equivalencia
+          }
+        }
+        return false;
+    }
+    
     /*
      * Comprovau si la relació `rel` definida entre `a` i `b` és una funció.
      *
      * Podeu soposar que `a` i `b` estan ordenats de menor a major.
      */
+    
     static boolean exercici3(int[] a, int[] b, int[][] rel) {
-      return false; // TO DO
-    }
+        //Recorremos los subconjuntos de la Relacion
+        for (int[] subConjunto : rel) {
+            //Primero miramos si los elementos estan en el conjunto
+            if (!estaEnElConjunto(subConjunto[0], a) || !estaEnElConjunto(subConjunto[1], b)) {
+                return false; //si al menos uno no esta ya no se cumple
+            }
+
+            //para verificar si el primer elemento de cada par en rel es único. 
+            //Si encuentra otro par con el mismo primer elemento, la relación no puede ser una función y se devuelve false.
+            int contador = 0;
+            //Recorremos los subconjuntos
+            for (int[] otroSubConjunto : rel) {
+                //Si el primer el elemento esta repetido no es una funcion
+                if (subConjunto[0] == otroSubConjunto[0]) {
+                    //Cuanta el numero de veces que se repiten los elementos en primera
+                    contador++;
+                    if (contador > 1) {
+                        return false; // Hay otro par con el mismo primer elemento
+                    }
+                }
+            }
+        }
+
+        return true; // La relación cumple con las propiedades de una función
+      }
+
+      static boolean estaEnElConjunto(int elemento, int[] conjunto) {
+        //Recorremos cada elemento del conjunto
+        for (int x : conjunto) {
+            
+            if (elemento == x) {
+              return true; // El elemento está en el conjunto
+            }
+        }
+        return false; // El elemento no está en el conjunto
+      }
+
 
     /*
      * Suposau que `f` és una funció amb domini `dom` i codomini `codom`.  Retornau:
