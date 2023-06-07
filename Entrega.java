@@ -597,6 +597,154 @@ public class PracticaDiscreta {
       return rel.toArray(new int[][] {});
     }
   }
+  
+  /*
+   * Aquí teniu els exercicis del Tema 3 (Grafs).
+   *
+   * Donarem els grafs en forma de diccionari d'adjacència, és a dir, un graf serà un array
+   * on cada element i-èssim serà un array ordenat que contendrà els índexos dels vèrtexos adjacents
+   * al i-èssim vèrtex. Per exemple, el graf cicle C_3 vendria donat per
+   *
+   *  int[][] g = {{1,2}, {0,2}, {0,1}}  (no dirigit: v0 -> {v1, v2}, v1 -> {v0, v2}, v2 -> {v0,v1})
+   *  int[][] g = {{1}, {2}, {0}}        (dirigit: v0 -> {v1}, v1 -> {v2}, v2 -> {v0})
+   *
+   * Podeu suposar que cap dels grafs té llaços.
+   */
+  static class Tema3 {
+    /*
+     * Retornau l'ordre menys la mida del graf (no dirigit).
+     */
+    static int exercici1(int[][] g) {
+        int numeroVertices = g.length; // Obtenemos el número de vértices (ORDEN)
+        int tamaño = 0; // Inicializamos el tamaño del grafo
+        
+        //Recorremos el grafo
+        for (int i = 0; i < g.length; i++) {
+          tamaño += g[i].length; // Sumamos el número de vértices adyacentes a cada vértice
+        }
+
+        tamaño /= 2; // Dividimos entre 2 ya que cada arista se cuenta dos veces en un grafo no dirigido
+
+        return numeroVertices - tamaño; // Retornamos la diferencia entre el orden y el tamaño
+    }
+    /*
+     * Suposau que el graf (no dirigit) és connex. És bipartit?
+     */
+    static boolean exercici2(int[][] g) {
+      return false; // TO DO
+    }
+    /*
+     * Suposau que el graf és un DAG. Retornau el nombre de descendents amb grau de sortida 0 del
+     * vèrtex i-èssim.
+     */
+    static int exercici3(int[][] g, int i) {
+      return -1; // TO DO
+    }
+
+    /*
+     * Donat un arbre arrelat (dirigit, suposau que l'arrel es el vèrtex 0), trobau-ne el diàmetre.
+     * Suposau que totes les arestes tenen pes 1.
+     * Donat un arbre arrelat (dirigit, suposau que l'arrel es el vèrtex 0), trobau-ne el diàmetre
+     * del graf subjacent. Suposau que totes les arestes tenen pes 1.
+     */
+    static int exercici4(int[][] g) {
+      return -1; // TO DO
+    }
+    /*
+     * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
+     */
+    static void tests() {
+      final int[][] undirectedK6 = {
+        { 1, 2, 3, 4, 5 },
+        { 0, 2, 3, 4, 5 },
+        { 0, 1, 3, 4, 5 },
+        { 0, 1, 2, 4, 5 },
+        { 0, 1, 2, 3, 5 },
+        { 0, 1, 2, 3, 4 },
+      };
+      /*
+         1
+      4  0  2
+         3
+      */
+      final int[][] undirectedW4 = {
+        { 1, 2, 3, 4 },
+        { 0, 2, 4 },
+        { 0, 1, 3 },
+        { 0, 2, 4 },
+        { 0, 1, 3 },
+      };
+      // 0, 1, 2 | 3, 4
+      final int[][] undirectedK23 = {
+        { 3, 4 },
+        { 3, 4 },
+        { 3, 4 },
+        { 0, 1, 2 },
+        { 0, 1, 2 },
+      };
+      /*
+             7
+             0
+           1   2
+             3   8
+             4
+           5   6
+      */
+      final int[][] directedG1 = {
+        { 1, 2 }, // 0
+        { 3 },    // 1
+        { 3, 8 }, // 2
+        { 4 },    // 3
+        { 5, 6 }, // 4
+        {},       // 5
+        {},       // 6
+        { 0 },    // 7
+        {},
+      };
+      /*
+              0
+         1    2     3
+            4   5   6
+           7 8
+      */
+      final int[][] directedRTree1 = {
+        { 1, 2, 3 }, // 0 = r
+        {},          // 1
+        { 4, 5 },    // 2
+        { 6 },       // 3
+        { 7, 8 },    // 4
+        {},          // 5
+        {},          // 6
+        {},          // 7
+        {},          // 8
+      };
+      /*
+            0
+            1
+         2     3
+             4   5
+                6  7
+      */
+      final int[][] directedRTree2 = {
+        { 1 },
+        { 2, 3 },
+        {},
+        { 4, 5 },
+        {},
+        { 6, 7 },
+        {},
+        {},
+      };
+      assertThat(exercici1(undirectedK6) == 6 - 5*6/2);
+      assertThat(exercici1(undirectedW4) == 5 - 2*4);
+      assertThat(exercici2(undirectedK23));
+      assertThat(!exercici2(undirectedK6));
+      assertThat(exercici3(directedG1, 0) == 3);
+      assertThat(exercici3(directedRTree1, 2) == 3);
+      assertThat(exercici4(directedRTree1) == 5);
+      assertThat(exercici4(directedRTree2) == 4);
+    }
+  }
 
   /*
    * Aquest mètode `main` conté alguns exemples de paràmetres i dels resultats que haurien de donar
@@ -608,6 +756,7 @@ public class PracticaDiscreta {
   public static void main(String[] args) {
     Tema1.tests();
     Tema2.tests();
+    Tema3.tests();
   }
 
   /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
